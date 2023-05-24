@@ -24,12 +24,23 @@ def convert_image_to_2d_array(file, inclusion_options, target_value):
     img_data = PIL.ImageOps.grayscale(Image.open(file))
     img_data_modified = np.asarray(img_data.getdata())  # Need to convert into a numpy array in order to utilise fancy indexing
     # Manipulate the image to make it easier to locate travserable pixels by standardising their values
-    if 'b' in inclusion_options and target_value != 0:
-        img_data_modified[img_data_modified == 0] = target_value
-    if 'w' in inclusion_options and target_value != 255:
-        img_data_modified[img_data_modified == 255] = target_value
+    pixel_colour_black = 0
+    pixel_colour_white = 255
+    if 'b' in inclusion_options:
+        img_data_modified[img_data_modified == pixel_colour_black] = target_value
+    else:
+        img_data_modified[img_data_modified == pixel_colour_black] = -1
+
+    if 'w' in inclusion_options:
+        img_data_modified[img_data_modified == pixel_colour_white] = target_value
+    else:
+        img_data_modified[img_data_modified == pixel_colour_white] = -1
+
     if 'c' in inclusion_options:
-        img_data_modified[np.logical_and(img_data_modified > 0, img_data_modified < 255)] = 0
+        img_data_modified[np.logical_and(img_data_modified > pixel_colour_black, img_data_modified < pixel_colour_white)] = target_value
+    else:
+        img_data_modified[np.logical_and(img_data_modified > pixel_colour_black, img_data_modified < pixel_colour_white)] = -1
+
     return img_data_modified.reshape((img_data.size[1], img_data.size[0]))
 
 

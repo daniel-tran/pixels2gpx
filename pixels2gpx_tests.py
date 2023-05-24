@@ -12,7 +12,35 @@ class TestImageTo2DArray(unittest.TestCase):
         self.assertEqual(result[0][0], 0)
         self.assertEqual(result[0][1], 0)
         self.assertEqual(result[1][0], 0)
-        self.assertEqual(result[1][1], 255)
+        self.assertEqual(result[1][1], -1)
+
+    def test_image_convert_b_with_colours(self):
+        result = convert_image_to_2d_array('images_test/square_coloured.png', 'b', 0)
+        self.assertEqual(result[0][0], -1)
+        self.assertEqual(result[0][1], -1)
+        self.assertEqual(result[1][0], -1)
+        self.assertEqual(result[1][1], -1)
+
+    def test_image_convert_w(self):
+        result = convert_image_to_2d_array('images_test/square.png', 'w', 0)
+        self.assertEqual(result[0][0], -1)
+        self.assertEqual(result[0][1], -1)
+        self.assertEqual(result[1][0], -1)
+        self.assertEqual(result[1][1], 0)
+
+    def test_image_convert_w_with_colours(self):
+        result = convert_image_to_2d_array('images_test/square_coloured.png', 'w', 0)
+        self.assertEqual(result[0][0], -1)
+        self.assertEqual(result[0][1], -1)
+        self.assertEqual(result[1][0], -1)
+        self.assertEqual(result[1][1], 0)
+
+    def test_image_convert_c(self):
+        result = convert_image_to_2d_array('images_test/square_coloured.png', 'c', 0)
+        self.assertEqual(result[0][0], 0)
+        self.assertEqual(result[0][1], 0)
+        self.assertEqual(result[1][0], 0)
+        self.assertEqual(result[1][1], -1)
 
     def test_image_convert_bw(self):
         result = convert_image_to_2d_array('images_test/square.png', 'bw', 0)
@@ -21,22 +49,29 @@ class TestImageTo2DArray(unittest.TestCase):
         self.assertEqual(result[1][0], 0)
         self.assertEqual(result[1][1], 0)
 
-    def test_image_convert_c(self):
-        result = convert_image_to_2d_array('images_test/square_coloured.png', 'c', 0)
+    def test_image_convert_cw(self):
+        result = convert_image_to_2d_array('images_test/square_coloured.png', 'cw', 0)
         self.assertEqual(result[0][0], 0)
         self.assertEqual(result[0][1], 0)
         self.assertEqual(result[1][0], 0)
-        self.assertEqual(result[1][1], 255)
+        self.assertEqual(result[1][1], 0)
+
+    def test_image_convert_cb(self):
+        result = convert_image_to_2d_array('images_test/square_coloured.png', 'cb', 0)
+        self.assertEqual(result[0][0], 0)
+        self.assertEqual(result[0][1], 0)
+        self.assertEqual(result[1][0], 0)
+        self.assertEqual(result[1][1], -1)
 
     def test_image_convert_none(self):
         result = convert_image_to_2d_array('images_test/square.png', '', 0)
-        self.assertEqual(result[0][0], 0)
-        self.assertEqual(result[0][1], 0)
-        self.assertEqual(result[1][0], 0)
-        self.assertEqual(result[1][1], 255)
+        self.assertEqual(result[0][0], -1)
+        self.assertEqual(result[0][1], -1)
+        self.assertEqual(result[1][0], -1)
+        self.assertEqual(result[1][1], -1)
 
     def test_fake_image_convert(self):
-        self.assertRaises(UnidentifiedImageError, convert_image_to_2d_array, 'pixels2gpx_test.py', '', 0)
+        self.assertRaises(UnidentifiedImageError, convert_image_to_2d_array, 'pixels2gpx_tests.py', '', 0)
 
 
 class TestBlindScan(unittest.TestCase):
