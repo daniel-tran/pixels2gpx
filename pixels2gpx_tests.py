@@ -7,7 +7,7 @@ from pixels2gpx import *
 class TestImageTo2DArray(unittest.TestCase):
 
     def test_basic_image_convert(self):
-        result = convert_image_to_2d_array('images_test/square.png', 'b', 0)
+        result = convert_image_to_2d_array('images/tests/square.png', 'b', 0)
         # Testing a small sample of pixels from one of the corners
         self.assertEqual(result[0][0], 0)
         self.assertEqual(result[0][1], 0)
@@ -15,56 +15,56 @@ class TestImageTo2DArray(unittest.TestCase):
         self.assertEqual(result[1][1], -1)
 
     def test_image_convert_b_with_colours(self):
-        result = convert_image_to_2d_array('images_test/square_coloured.png', 'b', 0)
+        result = convert_image_to_2d_array('images/tests/square_coloured.png', 'b', 0)
         self.assertEqual(result[0][0], -1)
         self.assertEqual(result[0][1], -1)
         self.assertEqual(result[1][0], -1)
         self.assertEqual(result[1][1], -1)
 
     def test_image_convert_w(self):
-        result = convert_image_to_2d_array('images_test/square.png', 'w', 0)
+        result = convert_image_to_2d_array('images/tests/square.png', 'w', 0)
         self.assertEqual(result[0][0], -1)
         self.assertEqual(result[0][1], -1)
         self.assertEqual(result[1][0], -1)
         self.assertEqual(result[1][1], 0)
 
     def test_image_convert_w_with_colours(self):
-        result = convert_image_to_2d_array('images_test/square_coloured.png', 'w', 0)
+        result = convert_image_to_2d_array('images/tests/square_coloured.png', 'w', 0)
         self.assertEqual(result[0][0], -1)
         self.assertEqual(result[0][1], -1)
         self.assertEqual(result[1][0], -1)
         self.assertEqual(result[1][1], 0)
 
     def test_image_convert_c(self):
-        result = convert_image_to_2d_array('images_test/square_coloured.png', 'c', 0)
+        result = convert_image_to_2d_array('images/tests/square_coloured.png', 'c', 0)
         self.assertEqual(result[0][0], 0)
         self.assertEqual(result[0][1], 0)
         self.assertEqual(result[1][0], 0)
         self.assertEqual(result[1][1], -1)
 
     def test_image_convert_bw(self):
-        result = convert_image_to_2d_array('images_test/square.png', 'bw', 0)
+        result = convert_image_to_2d_array('images/tests/square.png', 'bw', 0)
         self.assertEqual(result[0][0], 0)
         self.assertEqual(result[0][1], 0)
         self.assertEqual(result[1][0], 0)
         self.assertEqual(result[1][1], 0)
 
     def test_image_convert_cw(self):
-        result = convert_image_to_2d_array('images_test/square_coloured.png', 'cw', 0)
+        result = convert_image_to_2d_array('images/tests/square_coloured.png', 'cw', 0)
         self.assertEqual(result[0][0], 0)
         self.assertEqual(result[0][1], 0)
         self.assertEqual(result[1][0], 0)
         self.assertEqual(result[1][1], 0)
 
     def test_image_convert_cb(self):
-        result = convert_image_to_2d_array('images_test/square_coloured.png', 'cb', 0)
+        result = convert_image_to_2d_array('images/tests/square_coloured.png', 'cb', 0)
         self.assertEqual(result[0][0], 0)
         self.assertEqual(result[0][1], 0)
         self.assertEqual(result[1][0], 0)
         self.assertEqual(result[1][1], -1)
 
     def test_image_convert_none(self):
-        result = convert_image_to_2d_array('images_test/square.png', '', 0)
+        result = convert_image_to_2d_array('images/tests/square.png', '', 0)
         self.assertEqual(result[0][0], -1)
         self.assertEqual(result[0][1], -1)
         self.assertEqual(result[1][0], -1)
