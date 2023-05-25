@@ -4,6 +4,7 @@ import numpy as np
 import datetime
 import math
 from gooey import Gooey, GooeyParser
+from xml.sax.saxutils import escape
 
 
 def convert_image_to_2d_array(file, inclusion_options, target_value):
@@ -120,7 +121,7 @@ def generate_gpx(trackpoint_list, track_name):
   <time>{trackpoint_list[0].time}Z</time>
  </metadata>
  <trk>
-  <name>{track_name}</name>
+  <name>{escape(track_name)}</name>
   <type>10</type>
   <trkseg>
    {trackpoint_separator.join([trackpoint.to_gpx_string() for trackpoint in trackpoint_list])}

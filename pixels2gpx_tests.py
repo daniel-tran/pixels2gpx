@@ -122,6 +122,11 @@ class TestGenerateGPX(unittest.TestCase):
         result = generate_gpx(test_trackpoints, '')
         self.assertTrue('<name></name>' in result)
 
+    def test_generate_gpx_malicious_name(self):
+        test_trackpoints = [Trackpoint(13, 37, 1)]
+        result = generate_gpx(test_trackpoints, '<>&"\'/\\?!@#$%^*()_+-=[]{}|;:,.`~•')
+        self.assertTrue('<name>&lt;&gt;&amp;"\'/\\?!@#$%^*()_+-=[]{}|;:,.`~•</name>' in result)
+
 
 class TestTraversalVectors(unittest.TestCase):
 
