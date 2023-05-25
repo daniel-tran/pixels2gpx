@@ -228,7 +228,7 @@ def generate_trackpoints(image, reference_coordinate, pixel_start, traversal_ind
 
     # You can modify the pixel_target_count to get only the coordinates from index 0 to N rather than the full list
     for pixel_traversed_count in range(0, pixel_target_count):
-        print(f'Value at ({pixel_start[0]}, {pixel_start[1]}): {image[pixel_start[0]][pixel_start[1]]}')        
+        print(f'Traversing to ({pixel_start[0]}, {pixel_start[1]})')
         # The initial reference coordinate is ordered as latitude, longitude.
         # The pixel data from numpy is ordered as longitude, latitude
         output_trackpoints.append(Trackpoint(reference_coordinate[0] - (pixel_start[1] * 0.00001), reference_coordinate[1] + (pixel_start[0] * 0.00001), pixel_traversed_count))
@@ -296,7 +296,9 @@ if __name__ == '__main__':
         image_data = convert_image_to_2d_array(args.image_file, args.colour_zones.lower(), pixel_target_value)
         start_coordinate = calculate_starting_pixel(image_data, (args.start_x, args.start_y), args.pixel_traversal_index, pixel_target_value, args.direction)
         trackpoints = generate_trackpoints(image_data, (args.centre_x, args.centre_y), start_coordinate, args.pixel_traversal_index, pixel_target_value, args.direction)
+        print(f'Completed GPX conversion of "{args.image_file}"')
 
         with open(args.output_file, 'w', newline='', encoding='utf-8') as f:
             f.write(generate_gpx(trackpoints, args.track_name))
+            print(f'Success! The GPX file can be located at "{args.output_file}"')
     convert_pixels_to_gpx()
