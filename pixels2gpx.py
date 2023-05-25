@@ -2,8 +2,8 @@ from PIL import Image
 import PIL.ImageOps
 import numpy as np
 import datetime
-import argparse
 import math
+from gooey import Gooey, GooeyParser
 
 
 def convert_image_to_2d_array(file, inclusion_options, target_value):
@@ -274,27 +274,29 @@ def calculate_starting_pixel(image, start, traversal_index, target_value, traver
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Conversion tool to generate a GPX file based on an image, with each pixel of interest connected as a single track.',
-        epilog='This tool will only track black pixels, or white pixels if the -inv parameter is enabled.'
-    )
-    parser.add_argument('-i', dest='image_file', required=True, help='Input file location')
-    parser.add_argument('-o', dest='output_file', default='./output.gpx', help='Output file location')
-    parser.add_argument('-n', dest='track_name', default='My Walk', help='Name of the track')
-    parser.add_argument('-cx', dest='centre_x', default=32.3451, type=float, help='X coordinate of where the trackpoints will be based around')
-    parser.add_argument('-cy', dest='centre_y', default=-106.5614, type=float, help='Y coordinate of where the trackpoints will be based around')
-    parser.add_argument('-px', dest='start_x', default=-1, type=int, help='X pixel coordinate (zero-based) of where the track will start on the image. This has no effect when set to less than 0 or specified without the -py argument, and might be automatically adjusted to the nearest pixel of interest.')
-    parser.add_argument('-py', dest='start_y', default=-1, type=int, help='Y pixel coordinate (zero-based) of where the track will start on the image. This has no effect when set to less than 0 or specified without the -px argument, and might be automatically adjusted to the nearest pixel of interest.')
-    parser.add_argument('-pd', dest='pixel_traversal_index', default=0, type=int, choices=range(0, 8), help='Initial travsersal direction from the starting pixel coordinate. Each possible value corresponds to: 0 = Right (default), 1 = Right-down, 2 = Down, 3 = Left-down, 4 = Left, 5 = Left-up, 6 = Up, 7 = Right-up')
-    parser.add_argument('-d', dest='direction', default=1, type=int, choices=[1, -1], help='Direction of traversal checks. 1 = Clockwise (default), -1 = Counter-clockwise')
-    parser.add_argument('-col', dest='colour_zones', default='b', help='Colour categories to consider as part of traversal which can be combined together, e.g. bw. Possible options are: b = black pixels (default), w = white pixels, c = non-black and non-white pixels')
-    args = parser.parse_args()
+    @Gooey(image_dir='images/gooey', default_size=(700, 480))
+    def convert_pixels_to_gpx():
+        parser = GooeyParser(
+            description='Conversion tool to generate a GPX file based on an image, with each pixel of interest connected as a single track.'
+        )
+        parser.add_argument('-i', dest='image_file', metavar='Source Image', required=True, widget='FileChooser', help='Input file location')
+        parser.add_argument('-o', dest='output_file', metavar='Output File', required=True, default='./output.gpx', widget='FileSaver', help='Output file location')
+        parser.add_argument('-n', dest='track_name', metavar='Track Name', default='My Walk', help='Name of the track')
+        parser.add_argument('-col', dest='colour_zones', metavar='Colour Zones', default='b', help='\n'.join(['Colour categories to consider as part of traversal which can be combined together, e.g. bw. Possible options are:', 'b = black pixels (default)', 'w = white pixels', 'c = non-black and non-white pixels']))
+        parser.add_argument('-cx', dest='centre_x', metavar='Longitude', default=32.3451, type=float, help='X coordinate of where the trackpoints will be based around')
+        parser.add_argument('-cy', dest='centre_y', metavar='Latitude', default=-106.5614, type=float, help='Y coordinate of where the trackpoints will be based around')
+        parser.add_argument('-px', dest='start_x', metavar='Initial X Coordinate', default=-1, type=int, help='X pixel coordinate (zero-based) of where the track will start on the image.\nThis has no effect when set to less than 0 or specified without the initial Y coordinate argument, and might be automatically adjusted to the nearest pixel of interest.')
+        parser.add_argument('-py', dest='start_y', metavar='Initial Y Coordinate', default=-1, type=int, help='Y pixel coordinate (zero-based) of where the track will start on the image.\nThis has no effect when set to less than 0 or specified without the initial X coordinate argument, and might be automatically adjusted to the nearest pixel of interest.')
+        parser.add_argument('-pd', dest='pixel_traversal_index', metavar='Initial Traversal Direction', default=0, type=int, choices=range(0, 8), help='\n'.join(['Initial traversal direction from the starting pixel coordinate. Each possible value corresponds to:', '0 = Right (default)', '1 = Right-down', '2 = Down', '3 = Left-down', '4 = Left', '5 = Left-up', '6 = Up', '7 = Right-up']))
+        parser.add_argument('-d', dest='direction', metavar='Traversal Check Direction', default=1, type=int, choices=[1, -1], help='\n'.join(['Direction of traversal checks.', '1 = Clockwise (default)', '-1 = Counter-clockwise']))
+        args = parser.parse_args()
 
-    # For the time being, only consider black pixels to be travserable - allowing this to be configurable could get very technical, especially since this is a grayscale value
-    pixel_target_value = 0
-    image_data = convert_image_to_2d_array(args.image_file, args.colour_zones.lower(), pixel_target_value)
-    start_coordinate = calculate_starting_pixel(image_data, (args.start_x, args.start_y), args.pixel_traversal_index, pixel_target_value, args.direction)
-    trackpoints = generate_trackpoints(image_data, (args.centre_x, args.centre_y), start_coordinate, args.pixel_traversal_index, pixel_target_value, args.direction)
-    
-    with open(args.output_file, 'w', newline='', encoding='utf-8') as f:
-        f.write(generate_gpx(trackpoints, args.track_name))
+        # For the time being, only consider black pixels to be travserable - allowing this to be configurable could get very technical, especially since this is a grayscale value
+        pixel_target_value = 0
+        image_data = convert_image_to_2d_array(args.image_file, args.colour_zones.lower(), pixel_target_value)
+        start_coordinate = calculate_starting_pixel(image_data, (args.start_x, args.start_y), args.pixel_traversal_index, pixel_target_value, args.direction)
+        trackpoints = generate_trackpoints(image_data, (args.centre_x, args.centre_y), start_coordinate, args.pixel_traversal_index, pixel_target_value, args.direction)
+
+        with open(args.output_file, 'w', newline='', encoding='utf-8') as f:
+            f.write(generate_gpx(trackpoints, args.track_name))
+    convert_pixels_to_gpx()

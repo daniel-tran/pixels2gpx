@@ -6,17 +6,16 @@ Turn your pixel-based images into GPS coordinates that vaguely resemble it
 
 *Note: Users should have Python 3.8 or higher installed when running these commands*
 
-The following commands install the necessary packages and converts one of the sample images provided from this repository into a .gpx file in the current directory:
+The following command installs the necessary packages for this utility:
 
 ```batch
-pip install REQUIREMENTS.txt
-python pixels2gpx.py -i images\diamondshape.png -o diamondshape.gpx
+pip install -r REQUIREMENTS.txt
 ```
 
-For more details on what this tool can do, you can view the help information:
+After that, you can run this command to bring up the user interface where you can specify the input image and GPX file destination, among other things:
 
 ```batch
-python pixels2gpx.py -h
+python pixels2gpx.py
 ```
 
 # Running unit tests
