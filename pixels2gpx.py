@@ -235,10 +235,12 @@ def generate_trackpoints(image, reference_coordinate, pixel_start, traversal_ind
         output_trackpoints.append(Trackpoint(reference_coordinate[0] - (pixel_start[1] * 0.00001), reference_coordinate[1] + (pixel_start[0] * 0.00001), pixel_traversed_count))
 
         image[pixel_start[1]][pixel_start[0]] = pixel_ignore_value  # Remember that numpy arrays are in row-major order
-        pixel_ignore_value -= 1  # Decrement the value only for debug purposes to see the traversal path
-        pixel_next_traversal = calculate_next_traversal(image, pixel_start, traversal_index, target_value, traversal_check_direction)
-        pixel_start = pixel_next_traversal['vector']
-        traversal_index = pixel_next_traversal['index']
+        # There's no use doing any further work when processing the last pixel, since it's already added into the trackpoint list by this stage
+        if pixel_traversed_count < pixel_target_count - 1:
+            pixel_ignore_value -= 1  # Decrement the value only for debug purposes to see the traversal path
+            pixel_next_traversal = calculate_next_traversal(image, pixel_start, traversal_index, target_value, traversal_check_direction)
+            pixel_start = pixel_next_traversal['vector']
+            traversal_index = pixel_next_traversal['index']
     return output_trackpoints
 
     
