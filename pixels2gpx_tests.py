@@ -1,3 +1,6 @@
+# Copyright: (c) 2023, Daniel Tran (https://github.com/daniel-tran)
+# GNU General Public License v3.0+ (see LICENSE.rst or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 import numpy as np
 from PIL import UnidentifiedImageError
 import unittest

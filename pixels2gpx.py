@@ -1,3 +1,6 @@
+# Copyright: (c) 2023, Daniel Tran (https://github.com/daniel-tran)
+# GNU General Public License v3.0+ (see LICENSE.rst or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from PIL import Image
 import PIL.ImageOps
 import numpy as np
@@ -277,7 +280,21 @@ def calculate_starting_pixel(image, start, traversal_index, target_value, traver
 
 
 if __name__ == '__main__':
-    @Gooey(image_dir='images/gooey', default_size=(700, 480))
+    menu_items = [{
+        'name': 'Help',
+        'items': [{
+            'type': 'AboutDialog',
+            'menuTitle': 'About',
+            'name': 'pixels2gpx',
+            'description': 'Utility to convert your pixel-based images into a GPX file',
+            'version': '0.0.1',
+            'copyright': '2023',
+            'website': 'https://github.com/daniel-tran/pixels2gpx',
+            'developer': 'https://github.com/daniel-tran',
+            'license': 'GPL-3.0'
+        }]
+    }]
+    @Gooey(image_dir='images/gooey', default_size=(700, 480), menu=menu_items)
     def convert_pixels_to_gpx():
         parser = GooeyParser(
             description='Conversion tool to generate a GPX file based on an image, with each pixel of interest connected as a single track.'
