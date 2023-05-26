@@ -2,6 +2,8 @@
 
 Turn your pixel-based images into GPS coordinates that vaguely resemble it
 
+![Visual example with a diamond shape](https://github.com/daniel-tran/pixels2gpx/raw/main/images/readme/visual_example.png)
+
 # Usage
 
 *Note: Users should have Python 3.8 or higher installed when running these commands*
