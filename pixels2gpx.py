@@ -12,7 +12,8 @@ from xml.sax.saxutils import escape
 
 def convert_image_to_2d_array(file, inclusion_options, target_value):
     """
-    Converts the pixel data from an image file into a 2D array of integer values
+    Converts the pixel data from an image file into a 2D array of integer values.
+    Any transparent pixels will be interpreted as white.
 
     :param file: File name of the image
     :type file: str
@@ -24,8 +25,12 @@ def convert_image_to_2d_array(file, inclusion_options, target_value):
     :rtype: list
     """
 
+    # Convert transparent pixels to white, which is more in line with how image editors treat these
+    raw_img_data = Image.open(file).convert('RGBA')
+    raw_img_data_without_transparency = Image.new('RGBA', raw_img_data.size, 'WHITE')
+    raw_img_data_without_transparency.paste(raw_img_data, mask=raw_img_data)
     # Convert to grayscale for easier values to manage
-    img_data = PIL.ImageOps.grayscale(Image.open(file))
+    img_data = PIL.ImageOps.grayscale(raw_img_data_without_transparency.convert('RGB'))
     img_data_modified = np.asarray(img_data.getdata())  # Need to convert into a numpy array in order to utilise fancy indexing
     # Manipulate the image to make it easier to locate travserable pixels by standardising their values
     pixel_colour_black = 0

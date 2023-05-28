@@ -73,6 +73,12 @@ class TestImageTo2DArray(unittest.TestCase):
         self.assertEqual(result[1][0], -1)
         self.assertEqual(result[1][1], -1)
 
+    def test_image_convert_alpha_transparency(self):
+        result = convert_image_to_2d_array('images/tests/sample_alpha.png', 'w', 0)
+        for row in range(0, 2):
+            for column in range(0, len(result[row])):
+                self.assertEqual(result[row][column], 0)
+
     def test_fake_image_convert(self):
         self.assertRaises(UnidentifiedImageError, convert_image_to_2d_array, 'pixels2gpx_tests.py', '', 0)
 
