@@ -322,7 +322,7 @@ if __name__ == '__main__':
             description='Conversion tool to generate a GPX file based on an image, with each pixel of interest connected as a single track.'
         )
         parser.add_argument('-i', dest='image_file', metavar='Source Image', required=True, widget='FileChooser', help='Input file location')
-        parser.add_argument('-o', dest='output_file', metavar='Output File', required=True, default='./output.gpx', widget='FileSaver', help='Output file location')
+        parser.add_argument('-o', dest='output_file', metavar='Output File', required=True, default='output.gpx', widget='FileSaver', help='\n'.join(['Output file location.', 'If the file extension is .csv then the output contents will be written in CSV format']))
         parser.add_argument('-n', dest='track_name', metavar='Track Name', default='My Walk', help='Name of the track')
         parser.add_argument('-col', dest='colour_zones', metavar='Colour Zones', default='b', help='\n'.join(['Colour categories to consider as part of traversal which can be combined together, e.g. bw. Possible options are:', 'b = black pixels (default)', 'w = white pixels', 'c = non-black and non-white pixels']))
         parser.add_argument('-cx', dest='centre_x', metavar='Latitude', default=32.3451, type=float, help='X coordinate of where the trackpoints will be based around')
@@ -340,9 +340,25 @@ if __name__ == '__main__':
         trackpoints = generate_trackpoints(image_data, (args.centre_x, args.centre_y), start_coordinate, args.pixel_traversal_index, pixel_target_value, args.direction)
         print(f'Completed GPX conversion of "{args.image_file}"')
 
-        with open(args.output_file, 'w', newline='', encoding='utf-8') as f:
-            f.write(generate_gpx(trackpoints, args.track_name))
-            print(f'Success! The GPX file can be located at "{args.output_file}"')
+        output_file_format = 'GPX'
+        if args.output_file.strip().lower().endswith('.csv'):
+            output_file_format = 'CSV'
+            print(f'Formatting trackpoints into {output_file_format} format and writing results to "{args.output_file}"')
+            # CSV grid needs to be organised in row-major order, since writing to the output file is done as a per-row operation
+            csv_grid = [['' for y in range(0, len(image_data[0]))] for x in range(0, len(image_data))]
+            for trackpoint in trackpoints:
+                csv_grid[trackpoint.y][trackpoint.x] = f'{trackpoint.pixel_index}'
+            # Clean out the file to avoid rows from accumulating if written to multiple times
+            with open(args.output_file, 'w', newline='', encoding='utf-8') as f:
+                pass
+            with open(args.output_file, 'a', newline='', encoding='utf-8') as f:
+                for row in csv_grid:
+                    f.write(f'{",".join(row)}\n')
+        else:
+            # Write trackpoints to file in the standard GPX format
+            with open(args.output_file, 'w', newline='', encoding='utf-8') as f:
+                f.write(generate_gpx(trackpoints, args.track_name))
+        print(f'Success! The {output_file_format} file can be located at "{args.output_file}"')
 
         # MICROSOFT EXCEL CIRCULAR REFERENCE TRACE
         # This code outputs the generated track into CSV format and uses Microsoft Excel functions to draw a circular reference

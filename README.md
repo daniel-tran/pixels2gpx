@@ -41,6 +41,13 @@ After logging into Strava, you can navigate to the upload drop-down menu > Uploa
 [GPX Studio](https://gpx.studio/) is a free online tool that lets you view tracks from a GPX file on the world map. To upload a file, click on Load GPX > Desktop, and select the generated GPX file.
 Large or particularly complex images may require a bit of waiting before it shows.
 
+### Microsoft Excel
+
+If your output file has the `.csv` extension, the final output contents will be in CSV format. This can be useful in situations where a GPX viewer is not available or if the traversal of trackpoints is the primary focus. Additionally, each trackpoint is numbered starting from 1 and effectively ignores the latitude and longitude parameters.
+After generating the file, you can use [the Conditional Formatting](https://support.microsoft.com/en-au/office/highlight-patterns-and-trends-with-conditional-formatting-eea152f5-2a7d-4c1a-a2da-c5f893adb621) feature available in Microsoft Excel to connect each trackpoint by colour instead of a drawn line in a GPX viewer.
+
+Using this method results in no intermediate lines, but images will tend to look wider due the default width of the columns.
+
 ## How can I improve the GPX result from a given source image?
 
 Other than tweaking the parameters available, there are a couple of basic ways that should more or less improve the end result:
