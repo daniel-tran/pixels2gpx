@@ -159,8 +159,17 @@ class TestTraversalVectors(unittest.TestCase):
 class TestTrackpoint(unittest.TestCase):
 
     def test_gpx_string_from_trackpoint(self):
-        tp = Trackpoint(13, 37, 1)
-        self.assertTrue('<trkpt lat="13" lon="37">' in tp.to_gpx_string())
+        tp = Trackpoint(13.37, 37.13, 1)
+        self.assertTrue('<trkpt lat="13.37" lon="37.13">' in tp.to_gpx_string())
+        self.assertEqual(13.37, tp.latitude)
+        self.assertEqual(37.13, tp.longitude)
+
+    def test_set_pixel_coordinates(self):
+        tp = Trackpoint(13.37, 37.13, 1)
+        tp.set_pixel_coordinates(5, 10, 1)
+        self.assertEqual(5, tp.x)
+        self.assertEqual(10, tp.y)
+        self.assertEqual(1, tp.pixel_index)
 
 
 class TestNextTraversal(unittest.TestCase):

@@ -72,23 +72,38 @@ def blind_scan_on_2d_array(arr, target_value):
 
 
 class Trackpoint:
-    def __init__(self, x, y, time_increment):
+    def __init__(self, latitude, longitude, time_increment):
         """
-        :param x: X coordinate of the trackpoint
-        :type x: float
-        :param y: Y coordinate of the trackpoint
-        :type y: float
+        :param latitude: Latitude of the trackpoint
+        :type latitude: float
+        :param longitude: Longitude coordinate of the trackpoint
+        :type longitude: float
         :param time_increment: Number of seconds after the current time that this trackpoint was registered on
         :type time_increment: int
         """
-        self.latitude = x
-        self.longitude = y
+        self.latitude = latitude
+        self.longitude = longitude
         self.elevation = 0
         self.time = (datetime.datetime.utcnow() + datetime.timedelta(seconds=time_increment)).replace(microsecond=0).isoformat()  # Just missing the trailing Z
         self.extensions = {
             'cad': 35  # Not entirely sure what this does, but it's included in the exported GPX data from Strava
         }
-    
+
+    def set_pixel_coordinates(self, x, y, index):
+        """
+        Sets the X and Y coordinates of where this trackpoint is mapped to the source image
+
+        :param x: X pixel coordinate of the trackpoint
+        :type x: int
+        :param y: Y pixel coordinate of the trackpoint
+        :type y: int
+        :param index: Indicator of where this pixel is positioned in the final traversal path
+        :type index: int
+        """
+        self.x = x
+        self.y = y
+        self.pixel_index = index
+
     def to_gpx_string(self):
         """
         Returns a non-minified string representation of the trackpoint in the GPX format
@@ -240,7 +255,9 @@ def generate_trackpoints(image, reference_coordinate, pixel_start, traversal_ind
         print(f'Traversing to ({pixel_start[0]}, {pixel_start[1]})')
         # The initial reference coordinate is ordered as latitude, longitude.
         # The pixel data from numpy is ordered as longitude, latitude
-        output_trackpoints.append(Trackpoint(reference_coordinate[0] - (pixel_start[1] * 0.00001), reference_coordinate[1] + (pixel_start[0] * 0.00001), pixel_traversed_count))
+        trackpoint = Trackpoint(reference_coordinate[0] - (pixel_start[1] * 0.00001), reference_coordinate[1] + (pixel_start[0] * 0.00001), pixel_traversed_count)
+        trackpoint.set_pixel_coordinates(pixel_start[0], pixel_start[1], len(output_trackpoints) + 1)
+        output_trackpoints.append(trackpoint)
 
         image[pixel_start[1]][pixel_start[0]] = pixel_ignore_value  # Remember that numpy arrays are in row-major order
         # There's no use doing any further work when processing the last pixel, since it's already added into the trackpoint list by this stage
@@ -326,4 +343,31 @@ if __name__ == '__main__':
         with open(args.output_file, 'w', newline='', encoding='utf-8') as f:
             f.write(generate_gpx(trackpoints, args.track_name))
             print(f'Success! The GPX file can be located at "{args.output_file}"')
+
+        # MICROSOFT EXCEL CIRCULAR REFERENCE TRACE
+        # This code outputs the generated track into CSV format and uses Microsoft Excel functions to draw a circular reference
+        # trace from the first track point to the last. It is currently deemed experimental and thus commented out.
+        #
+        # Note that this is somewhat intensive on CPU resources for some machines and will lag when navigating around the loaded
+        # file in Microsoft Excel which worsens as more trackpoints are involved to draw the image.
+        """
+        # CSV grid needs to be organised in row-major order, since writing to the output file is done as a per-row operation
+        csv_grid = [['' for y in range(0, len(image_data[0]))] for x in range(0, len(image_data))]
+        trackpoint_next = trackpoints[0]
+        trackpoints_looped = trackpoints
+        # Each traversed pixel needs to refer to the one ahead of it, which is easier to do when the trackpoint list is flipped
+        trackpoints_looped.reverse()
+        for trackpoint in trackpoints_looped:
+            # Draw a reference from the current trackpoint to the next one in a way that reflects the traversal order.
+            # Note that column & row indexing in Microsoft Excel is 1-based, requiring a manual offset to account for it.
+            csv_grid[trackpoint.y][trackpoint.x] = f'"=INDIRECT(""R"" & {trackpoint_next.y + 1} & ""C"" & {trackpoint_next.x + 1},FALSE)"'
+            trackpoint_next = trackpoint
+        # Clean out the file to avoid rows from accumulating if written to multiple times
+        circular_reference_csv_file = f'{args.output_file}.csv'
+        with open(circular_reference_csv_file, 'w', newline='', encoding='utf-8') as f:
+            pass
+        with open(circular_reference_csv_file, 'a', newline='', encoding='utf-8') as f:
+            for row in csv_grid:
+                f.write(f'{",".join(row)}\n')
+        """
     convert_pixels_to_gpx()
